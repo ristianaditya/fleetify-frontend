@@ -67,11 +67,10 @@ export default function EmployeeFormModal({
   const [departmentsLoading, setDepartmentsLoading] = useState(false);
   const [errors, setErrors] = useState<Partial<EmployeeFormData>>({});
 
-  // Fetch departments
   const fetchDepartments = async () => {
     try {
       setDepartmentsLoading(true);
-      const response = await fetch('http://localhost:8000/api/departements?per_page=100');
+      const response = await fetch(`${process.env.BACKEND_URL}/departements?per_page=100`);
       
       if (!response.ok) {
         throw new Error('Failed to fetch departments');
@@ -98,7 +97,6 @@ export default function EmployeeFormModal({
           address: editData.address
         });
       } else {
-        // Generate employee ID for new employee
         const generateEmployeeId = () => {
           const timestamp = Date.now().toString().slice(-6);
           return `EMP${timestamp}`;
@@ -167,8 +165,8 @@ export default function EmployeeFormModal({
     
     try {
       const url = mode === 'create' 
-        ? 'http://localhost:8000/api/employees'
-        : `http://localhost:8000/api/employees/${editData?.id}`;
+        ? `${process.env.BACKEND_URL}/employees`
+        : `${process.env.BACKEND_URL}/employees/${editData?.id}`;
 
       const method = mode === 'create' ? 'POST' : 'PUT';
 

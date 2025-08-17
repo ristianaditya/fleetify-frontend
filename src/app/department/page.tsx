@@ -68,7 +68,7 @@ export default function DepartmentPage() {
   const fetchDepartments = async (page: number) => {
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:8000/api/departements?page=${page}&per_page=${perPage}`);
+      const response = await fetch(`${process.env.BACKEND_URL}/departements?page=${page}&per_page=${perPage}`);
       
       if (!response.ok) {
         throw new Error('Failed to fetch data');
@@ -119,7 +119,7 @@ export default function DepartmentPage() {
 
     setDeleteLoading(true);
     try {
-      const response = await fetch(`http://localhost:8000/api/departements/${deleteTarget.id}`, {
+      const response = await fetch(`${process.env.BACKEND_URL}/departements/${deleteTarget.id}`, {
         method: 'DELETE',
       });
 

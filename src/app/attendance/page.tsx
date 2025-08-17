@@ -90,7 +90,7 @@ export default function AttendanceReportPage() {
   const fetchDepartments = async () => {
     try {
       setDepartmentsLoading(true);
-      const response = await fetch('http://localhost:8000/api/departements?per_page=100');
+      const response = await fetch(`${process.env.BACKEND_URL}/departements?per_page=100`);
       
       if (!response.ok) {
         throw new Error('Failed to fetch departments');
@@ -110,7 +110,7 @@ export default function AttendanceReportPage() {
 
     try {
       setLoading(true);
-      let url = `http://localhost:8000/api/attendance/report?page=${page}&per_page=${perPage}&start_date=${startDate}&end_date=${endDate}`;
+      let url = `${process.env.BACKEND_URL}/attendance/report?page=${page}&per_page=${perPage}&start_date=${startDate}&end_date=${endDate}`;
       
       if (selectedDepartment) {
         url += `&department_id=${selectedDepartment}`;
@@ -145,7 +145,6 @@ export default function AttendanceReportPage() {
     const stats = records.reduce((acc, record) => {
       acc.total++;
       
-      // Count clock-in status
       if (record.status_in === 'tepat waktu') {
         acc.onTime++;
       } else if (record.status_in === 'terlambat') {

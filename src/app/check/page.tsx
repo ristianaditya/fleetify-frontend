@@ -9,7 +9,6 @@ import {
   SelectItem, 
   Spinner,
   Chip,
-  Divider
 } from "@heroui/react";
 import { 
   Clock, 
@@ -18,7 +17,6 @@ import {
   LogIn, 
   LogOut, 
   Calendar,
-  Building2,
   AlertCircle,
   RefreshCw
 } from "lucide-react";
@@ -55,7 +53,7 @@ interface AttendanceResponse {
 }
 
 interface TodayAttendanceResponse {
-  data: AttendanceRecord | null;
+  attendances: AttendanceRecord | null;
 }
 
 export default function AttendancePage() {
@@ -66,20 +64,17 @@ export default function AttendancePage() {
   const [currentTime, setCurrentTime] = useState<string>('');
   const [currentDate, setCurrentDate] = useState<string>('');
   
-  // Loading states
   const [employeesLoading, setEmployeesLoading] = useState(false);
   const [checkInLoading, setCheckInLoading] = useState(false);
   const [checkOutLoading, setCheckOutLoading] = useState(false);
   const [attendanceLoading, setAttendanceLoading] = useState(false);
   
-  // Status states
   const [lastAction, setLastAction] = useState<{
     type: 'check-in' | 'check-out';
     message: string;
     time: string;
   } | null>(null);
 
-  // Update current time every second
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
@@ -116,7 +111,7 @@ export default function AttendancePage() {
   const fetchEmployees = async () => {
     try {
       setEmployeesLoading(true);
-      const response = await fetch('http://localhost:8000/api/employees?per_page=100');
+      const response = await fetch(`${process.env.BACKEND_URL}/employees?per_page=100`);
       
       if (!response.ok) {
         throw new Error('Failed to fetch employees');
@@ -138,11 +133,11 @@ export default function AttendancePage() {
     try {
       setAttendanceLoading(true);
       const today = new Date().toISOString().split('T')[0];
-      const response = await fetch(`http://localhost:8000/api/attendance/today?employee_id=${selectedEmployee.id}&date=${today}`);
+      const response = await fetch(`${process.env.BACKEND_URL}/attendance/today?employee_id=${selectedEmployee.id}&date=${today}`);
       
       if (response.ok) {
         const result: TodayAttendanceResponse = await response.json();
-        setTodayAttendance(result.data);
+        setTodayAttendance(result.attendances);
       } else {
         setTodayAttendance(null);
       }
@@ -162,7 +157,7 @@ export default function AttendancePage() {
 
     try {
       setCheckInLoading(true);
-      const response = await fetch('http://localhost:8000/api/attendance', {
+      const response = await fetch(`${process.env.BACKEND_URL}/attendance`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -206,7 +201,7 @@ export default function AttendancePage() {
 
     try {
       setCheckOutLoading(true);
-      const response = await fetch('http://localhost:8000/api/attendance', {
+      const response = await fetch(`${process.env.BACKEND_URL}/attendance`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -260,24 +255,22 @@ export default function AttendancePage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      {/* Header Card */}
-      <Card className="border border-gray-200 shadow-sm">
+      <Card className="border border-indigo-50 shadow-sm">
         <CardBody className="p-6">
           <div className="text-center space-y-2">
             <div className="flex items-center justify-center gap-2 mb-4">
-              <Clock className="w-6 h-6 text-indigo-600" />
+              <Clock className="w-6 h-6 text-indigo-800" />
               <h1 className="text-2xl font-bold text-gray-900">Employee Attendance</h1>
             </div>
             <div className="space-y-1">
-              <p className="text-3xl font-mono font-bold text-indigo-600">{currentTime}</p>
+              <p className="text-3xl font-mono font-bold text-indigo-900">{currentTime}</p>
               <p className="text-sm text-gray-600">{currentDate}</p>
             </div>
           </div>
         </CardBody>
       </Card>
 
-      {/* Employee Selection */}
-      <Card className="border border-gray-200 shadow-sm">
+      <Card className="border border-indigo-50 shadow-sm">
         <CardBody className="p-6">
           <div className="space-y-4">
             <div className="flex items-center gap-2">
@@ -298,7 +291,7 @@ export default function AttendancePage() {
               isLoading={employeesLoading}
               startContent={<User className="w-4 h-4 text-gray-400" />}
               classNames={{
-                trigger: "h-16 bg-gray-50 border-gray-200 hover:bg-gray-100",
+                trigger: "h-16 bg-gray-50 border-indigo-50 hover:bg-gray-100",
                 label: "text-gray-700 font-medium",
                 value: "text-sm"
               }}
@@ -307,8 +300,7 @@ export default function AttendancePage() {
             >
               {employees.map((employee) => (
                 <SelectItem 
-                  key={employee.id.toString()} 
-                  value={employee.id.toString()}
+                  key={employee.id.toString()}
                   textValue={`${employee.name} (${employee.employee_id})`}
                 >
                   <div className="flex flex-col">
@@ -324,11 +316,9 @@ export default function AttendancePage() {
         </CardBody>
       </Card>
 
-      {/* Selected Employee Info & Attendance Status */}
       {selectedEmployee && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Employee Info */}
-          <Card className="border border-gray-200 shadow-sm">
+          <Card className="border border-indigo-50 shadow-sm">
             <CardBody className="p-6">
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
@@ -364,8 +354,7 @@ export default function AttendancePage() {
             </CardBody>
           </Card>
 
-          {/* Today's Attendance */}
-          <Card className="border border-gray-200 shadow-sm">
+          <Card className="border border-indigo-50 shadow-sm">
             <CardBody className="p-6">
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
@@ -420,9 +409,8 @@ export default function AttendancePage() {
         </div>
       )}
 
-      {/* Action Buttons */}
       {selectedEmployee && (
-        <Card className="border border-gray-200 shadow-sm">
+        <Card className="border border-indigo-50 shadow-sm">
           <CardBody className="p-6">
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-gray-900">Actions</h3>
@@ -435,7 +423,7 @@ export default function AttendancePage() {
                   isLoading={checkInLoading}
                   isDisabled={!canCheckIn}
                   startContent={!checkInLoading && <LogIn className="w-5 h-5" />}
-                  className="h-16 font-medium"
+                  className="h-11 font-small"
                   radius="lg"
                 >
                   {checkInLoading ? 'Checking In...' : 'Check In'}
@@ -448,7 +436,7 @@ export default function AttendancePage() {
                   isLoading={checkOutLoading}
                   isDisabled={!canCheckOut}
                   startContent={!checkOutLoading && <LogOut className="w-5 h-5" />}
-                  className="h-16 font-medium"
+                  className="h-11 font-small"
                   radius="lg"
                 >
                   {checkOutLoading ? 'Checking Out...' : 'Check Out'}
@@ -466,7 +454,6 @@ export default function AttendancePage() {
         </Card>
       )}
 
-      {/* Last Action Status */}
       {lastAction && (
         <Card className="border border-green-200 bg-green-50 shadow-sm">
           <CardBody className="p-6">
@@ -486,15 +473,14 @@ export default function AttendancePage() {
         </Card>
       )}
 
-      {/* Instructions */}
       {!selectedEmployee && (
-        <Card className="border border-blue-200 bg-blue-50 shadow-sm">
+        <Card className="border border-indigo-200 bg-indigo-50 shadow-sm">
           <CardBody className="p-6">
             <div className="flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5" />
+              <AlertCircle className="w-5 h-5 text-indigo-600 mt-0.5" />
               <div>
-                <h4 className="font-medium text-blue-800 mb-2">How to use:</h4>
-                <ul className="text-sm text-blue-700 space-y-1">
+                <h4 className="font-medium text-indigo-800 mb-2">How to use:</h4>
+                <ul className="text-sm text-indigo-700 space-y-1">
                   <li>1. Select an employee from the dropdown above</li>
                   <li>2. Click "Check In" when the employee arrives</li>
                   <li>3. Click "Check Out" when the employee leaves</li>

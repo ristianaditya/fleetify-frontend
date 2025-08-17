@@ -123,8 +123,8 @@ export default function DepartmentFormModal({
     
     try {
       const url = mode === 'create' 
-        ? 'http://localhost:8000/api/departements'
-        : `http://localhost:8000/api/departements/${editData?.id}`;
+        ? `${process.env.BACKEND_URL}/departements`
+        : `${process.env.BACKEND_URL}/departements/${editData?.id}`;
 
       const method = mode === 'create' ? 'POST' : 'PUT';
 

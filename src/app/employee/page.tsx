@@ -68,7 +68,7 @@ export default function EmployeePage() {
   const fetchEmployees = async (page: number) => {
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:8000/api/employees?page=${page}&per_page=${perPage}`);
+      const response = await fetch(`${process.env.BACKEND_URL}/employees?page=${page}&per_page=${perPage}`);
       
       if (!response.ok) {
         throw new Error('Failed to fetch data');
@@ -119,7 +119,7 @@ export default function EmployeePage() {
 
     setDeleteLoading(true);
     try {
-      const response = await fetch(`http://localhost:8000/api/employees/${deleteTarget.id}`, {
+      const response = await fetch(`${process.env.BACKEND_URL}/employees/${deleteTarget.id}`, {
         method: 'DELETE',
       });
 
